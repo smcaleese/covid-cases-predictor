@@ -1,66 +1,20 @@
 //import React from 'react';
 import './App.css';
+import Chart from './Chart';
+import React from 'react';
 
-import React, { PureComponent } from 'react';
-import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-} from 'recharts';
-
-class Example extends PureComponent {
-  render() {
-    const dateArr = this.props.dateArr;
-    const casesArr = this.props.casesArr;
-
-    const data = [];
-
-    for(var i = 0; i < 10; i++) {
-      let newElement = { name: dateArr[i], uv: casesArr[i] }
-      data.push(newElement);
-    }
-
+function InputBox(props) {
     return (
-      <div>
-        <LineChart
-          width={1500}
-          height={500}
-          data={data}
-          margin={{
-            top: 10, right: 30, left: 0, bottom: 0,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Line connectNulls type="monotone" dataKey="uv" stroke="#8884d8" fill="#8884d8" animationDuration={100} />
-        </LineChart>
-    </div>
+      <div className="input-div">
+        <p className="input-p">Current Cases</p>
+        <input className="main-input" type="text" name="currentCases" onChange={ props.handleChange } value={ props.currentCases } />
+        <p className="input-p">Average Daily Growth Rate (%)</p>
+        <input className="main-input" type="text" name="avgDailyGrowthRate" onChange={ props.handleChange } value={ props.avgDailyGrowthRate } />
+        <p className="input-p">Forecase Days</p>
+        <input className="main-input" type="text" name="forecastNumDays" onChange={ props.handleChange } value={ props.forecastNumDays } />
+      </div>
     );
-  }
 }
-
-/* For debugging Purposes */
-/*
-function DateList(props) {
-  const dayArr = props.arr;
-  const listItems = dayArr.map((date) =>
-    <li>{ date }</li>
-  );
-  return (
-    <ul>{ listItems }</ul>
-  );
-}
-
-function CasesList(props) {
-  const casesArr = props.arr;
-  const listItems = casesArr.map((c) =>
-    <li>{ c }</li>
-  );
-  return (
-    <ul>{ listItems }</ul>
-  );
-}
-*/
 
 class App extends React.Component {
   constructor(props) {
@@ -68,74 +22,66 @@ class App extends React.Component {
     this.state = {
       currentCases: 100,
       avgDailyGrowthRate: 20,
-      forecastNumDays: 30
+      forecastNumDays: 15
     };
   }
 
-  static getDates() {
-    let today = new Date().toISOString().slice(0, 10)
+  getDates = () => {
+    let dateToday = new Date().toISOString().slice(0, 10);
+    let dayOfMonth = parseInt(dateToday.slice(8, 10));
 
-    // get dates of next four days based on today
-    // today = "2020-03-12"
+    let strDays = []; // dates from today
+    let monthNum = parseInt(dateToday.slice(5, 7));
+    let numDaysForecast = this.state.forecastNumDays;
 
-    var strDays = [];
-    var currDay = parseInt(today.slice(8, 10)); // 12
-
-    for(var i = 0; i < 10; i++) {
-      let newDate = "2020-03-" + currDay.toString();
-      currDay++;
+    for(let i = 0; i < numDaysForecast; i++) {
+      if(dayOfMonth % 30 == 1) { // assume 30 days in a month for now
+        monthNum++;
+        dayOfMonth = 1;
+      }
+      let newDate = dayOfMonth.toString() + "/" + monthNum.toString();
       strDays.push(newDate);
+      dayOfMonth++;
     }
     return strDays;
   }
 
-  static getCases(currCases, avgDailyGrowthRate, forecastNumDays) {
-    //var currCases = this.state.currentCases; // eg. 50
-    var futureCases = []; // cases per day for the next 30 days
+  getCases = (currCases, avgDailyGrowthRate) => {
+    let casesArr = []; // cases per day
 
-    for(var i = 0; i < forecastNumDays; i++) {
-      // cases for a given day
-      var cases = currCases * Math.pow((1 + (avgDailyGrowthRate / 100)), i)
-      futureCases.push(cases);
+    for(let i = 0; i < this.state.forecastNumDays; i++) {
+      let cases = this.state.currentCases * Math.pow((1 + (this.state.avgDailyGrowthRate / 100)), i) // cases for a given day
+      cases = Math.round(cases);
+      casesArr.push(cases);
     }
-    return futureCases;
+    console.log(casesArr);
+    return casesArr;
   }
 
   handleInputChange = (event) => {
     let name = event.target.name;
     let value = event.target.value;
 
-    // wait for full input
-    setTimeout(() =>
-      this.setState({
-        [name]: value
-      }),
-      100
-    );
-
-
+    this.setState({
+      [name]: value
+    });
   }
 
   render() {
     let today = new Date().toISOString().slice(0, 10)
     let todayCut = new Date().toISOString().slice(8, 10)
-    var dateArr = App.getDates();
 
-    var currCases = this.state.currentCases;
-    var avgDailyGrowthRate = this.state.avgDailyGrowthRate;
-    var forecastNumDays = this.state.forecastNumDays;
-    var casesArr = App.getCases(currCases, avgDailyGrowthRate, forecastNumDays);
+    let dateArr = this.getDates();
+    let casesArr = this.getCases();
 
     return (
       <div>
-      <p>Current Cases</p>
-      <input type="text" name="currentCases" onChange={ this.handleInputChange } />
-      <p>Average Daily Growth Rate (%)</p>
-      <input type="text" name="avgDailyGrowthRate" onChange={ this.handleInputChange } />
-      <p>Forecase Days</p>
-      <input type="text" name="forecastNumDays" onChange={ this.handleInputChange } />
-      <br /><br />
-      <Example dateArr={ dateArr } casesArr={ casesArr } />
+      <InputBox handleChange={ this.handleInputChange }
+        currentCases={ this.state.currentCases }
+        avgDailyGrowthRate={ this.state.avgDailyGrowthRate }
+        forecastNumDays={ this.state.forecastNumDays }
+      />
+      <Chart dateArr={ dateArr } casesArr={ casesArr } />
     </div>
     );
   }

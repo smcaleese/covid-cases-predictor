@@ -13,11 +13,9 @@ Graphing and forecasting can be done via programming languages such as R. Howeve
 ## Installation
 
 1. download and extract the repository.
-2. run `npm install` in a terminal inside the repository.
-
-3. run `npm start`
-4. run `npm install recharts`
-5. open `http://localhost:3000` to view the app.
+2. run `yarn`
+3. run `yarn start`
+4. open `http://localhost:3000` to view the app.
 
 # Technologies
 

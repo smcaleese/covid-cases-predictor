@@ -5,10 +5,13 @@ import InputContainer from './Input';
 import React from 'react';
 
 // TODO:
+// deploy current version to heroku
+// play game
+
 // change color for each graph?
-// merge branch and push changes to github
 // make app more mobile-friendly
 // add social distancing as an input
+// make UI more impressive
 // refactor / simplify code
 
 class App extends React.Component {

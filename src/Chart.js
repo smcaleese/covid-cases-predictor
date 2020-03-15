@@ -88,8 +88,6 @@ class Chart extends PureComponent {
         data.push(newElementCopy);
       }
 
-
-
       // example data:
       // { name: 2/3, cases1: 100, cases2: 50 }
       // { name: 3/3, cases1: 200, cases2: 100 }
@@ -105,10 +103,13 @@ class Chart extends PureComponent {
       keyArr = keyArr.splice(1) // remove dates key
       console.log("data:", keyArr);
 
+      // red, orange, green, blue
+      const colors = ["#e03e00", "#ea7100", "#00b200", "#0482cb"];
+
       let lineArr = [];
       // add lines to lineArr
       for(let i = 0; i < keyArr.length; i++) {
-        const line = <Line connectNulls type="monotone" dataKey={ keyArr[i] } stroke="#e32619" fill="#e32619" animationDuration={100} />;
+        const line = <Line connectNulls type="monotone" dataKey={ keyArr[i] } stroke={ colors[i % colors.length] } fill={ colors[i % colors.length ] } animationDuration={100} />;
         lineArr.push(line);
       }
       console.log("lines:", lineArr);

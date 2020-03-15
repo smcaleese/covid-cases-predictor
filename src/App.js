@@ -1,7 +1,7 @@
 //import React from 'react';
 import './App.css';
-import Chart from './Chart';
-import InputContainer from './Input';
+import Chart from './Chart.js';
+import InputContainer from './Input.js';
 import React from 'react';
 
 // TODO:

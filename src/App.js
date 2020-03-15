@@ -1,87 +1,102 @@
 //import React from 'react';
 import './App.css';
 import Chart from './Chart';
+import InputContainer from './Input';
 import React from 'react';
 
-function InputBox(props) {
-    return (
-      <div className="input-div">
-        <p className="input-p">Current Cases</p>
-        <input className="main-input" type="text" name="currentCases" onChange={ props.handleChange } value={ props.currentCases } />
-        <p className="input-p">Average Daily Growth Rate (%)</p>
-        <input className="main-input" type="text" name="avgDailyGrowthRate" onChange={ props.handleChange } value={ props.avgDailyGrowthRate } />
-        <p className="input-p">Forecase Days</p>
-        <input className="main-input" type="text" name="forecastNumDays" onChange={ props.handleChange } value={ props.forecastNumDays } />
-      </div>
-    );
-}
+// TODO:
+// change color for each graph?
+// merge branch and push changes to github
+// make app more mobile-friendly
+// add social distancing as an input
+// refactor / simplify code
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentCases: 100,
-      avgDailyGrowthRate: 20,
-      forecastNumDays: 15
+      inputBoxes: [
+        {
+          currentCases0: 100,
+          avgDailyGrowthRate0: 20,
+          forecastNumDays: 15,
+        },
+        {
+          currentCases1: 200,
+          avgDailyGrowthRate1: 20,
+          forecastNumDays: 15,
+        }
+      ]
     };
-  }
-
-  getDates = () => {
-    let dateToday = new Date().toISOString().slice(0, 10);
-    let dayOfMonth = parseInt(dateToday.slice(8, 10));
-
-    let strDays = []; // dates from today
-    let monthNum = parseInt(dateToday.slice(5, 7));
-    let numDaysForecast = this.state.forecastNumDays;
-
-    for(let i = 0; i < numDaysForecast; i++) {
-      if(dayOfMonth % 30 == 1) { // assume 30 days in a month for now
-        monthNum++;
-        dayOfMonth = 1;
-      }
-      let newDate = dayOfMonth.toString() + "/" + monthNum.toString();
-      strDays.push(newDate);
-      dayOfMonth++;
-    }
-    return strDays;
-  }
-
-  getCases = (currCases, avgDailyGrowthRate) => {
-    let casesArr = []; // cases per day
-
-    for(let i = 0; i < this.state.forecastNumDays; i++) {
-      let cases = this.state.currentCases * Math.pow((1 + (this.state.avgDailyGrowthRate / 100)), i) // cases for a given day
-      cases = Math.round(cases);
-      casesArr.push(cases);
-    }
-    console.log(casesArr);
-    return casesArr;
   }
 
   handleInputChange = (event) => {
     let name = event.target.name;
     let value = event.target.value;
+    console.log(name, value);
+    let v = 0;
+    if(value !== "") {
+      v = parseInt(value);
+    }
+    else {
+      v = 0;
+    }
+    console.log("v", v, typeof v);
+    //console.log("change detected!");
 
-    this.setState({
-      [name]: value
-    });
+    let stateCopy = Object.assign({}, this.state);
+    stateCopy.inputBoxes = stateCopy.inputBoxes.slice();
+    let key = name.slice(-1); // number at end of object key, key for inputBoxes array
+    //console.log("key", key);
+
+    if(isNaN(key)) {
+      // for forecast days change
+      key = 0;
+    }
+
+    stateCopy.inputBoxes[key] = Object.assign({}, stateCopy.inputBoxes[key]);
+    stateCopy.inputBoxes[key][name] = v;
+    console.log("test", stateCopy.inputBoxes[key][name]);
+    this.setState(stateCopy);
+    console.log("state", this.state);
+  }
+
+  handleAddBoxButton = (event) => {
+    let currArrLen = this.state.inputBoxes.length.toString();
+    let firstKey = "currentCases" + currArrLen;
+    let secondKey = "avgDailyGrowthRate" + currArrLen;
+    let thirdKey = "forecastNumDays";
+
+    let defaultBox = {
+      [firstKey]: 100 + (currArrLen * 10),
+      [secondKey]: 20,
+      [thirdKey]: 15
+    };
+
+    this.setState(state => ({
+      inputBoxes: state.inputBoxes.concat(defaultBox)
+    }));
+    console.log("state", this.state);
+  }
+
+  handleSubtractBoxButton = (event) => {
+    if(this.state.inputBoxes.length > 1) {
+      this.setState(state => ({
+        inputBoxes: state.inputBoxes.slice(0, this.state.inputBoxes.length - 1)
+      }));
+    }
   }
 
   render() {
-    let today = new Date().toISOString().slice(0, 10)
-    let todayCut = new Date().toISOString().slice(8, 10)
-
-    let dateArr = this.getDates();
-    let casesArr = this.getCases();
-
     return (
       <div>
-      <InputBox handleChange={ this.handleInputChange }
-        currentCases={ this.state.currentCases }
-        avgDailyGrowthRate={ this.state.avgDailyGrowthRate }
-        forecastNumDays={ this.state.forecastNumDays }
+      <InputContainer
+        handleChange={ this.handleInputChange }
+        inputBoxes={ this.state.inputBoxes }
+        handlePositiveButtonPress={ this.handleAddBoxButton }
+        handleNegativeButtonPress={ this.handleSubtractBoxButton }
       />
-      <Chart dateArr={ dateArr } casesArr={ casesArr } />
+      <Chart inputBoxes={ this.state.inputBoxes } />
     </div>
     );
   }

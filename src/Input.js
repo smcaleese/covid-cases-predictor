@@ -4,11 +4,11 @@ function InputBox(props) {
     return (
       <div className="input-div">
         <p className="input-p">Current Cases</p>
-        <input className="main-input" type="text" name={ props.currentCasesName } onChange={ props.handleChange } value={ props.currentCasesValue } />
+        <input className="main-input" type="number" name={ props.currentCasesName } onChange={ props.handleChange } value={ props.currentCasesValue } />
         <p className="input-p">Average Daily Growth Rate (%)</p>
-        <input className="main-input" type="text" name={ props.avgDailyGrowthRateName } onChange={ props.handleChange } value={ props.avgDailyGrowthRateValue } />
+        <input className="main-input" type="number" name={ props.avgDailyGrowthRateName } onChange={ props.handleChange } value={ props.avgDailyGrowthRateValue } />
         <p className="input-p">Forecase Days</p>
-        <input className="main-input" type="text" name={ props.forecastNumDaysName } onChange={ props.handleChange } value={ props.forecastNumDaysValue } />
+        <input className="main-input" type="number" name={ props.forecastNumDaysName } onChange={ props.handleChange } value={ props.forecastNumDaysValue } />
       </div>
     );
 }

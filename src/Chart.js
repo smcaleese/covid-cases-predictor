@@ -4,23 +4,21 @@ import {
 } from 'recharts';
 
 class Chart extends PureComponent {
-  getDates = (numDays) => {
-    let dateToday = new Date().toISOString().slice(0, 10);
-    let dayOfMonth = parseInt(dateToday.slice(8, 10));
+	getDates(forecastNumDays) {
+		let dateToday = new Date();
+		let daysArr = [];
 
-    let daysArr = []; // dates from today
-    let monthNum = parseInt(dateToday.slice(5, 7));
-    for(let i = 0; i < numDays; i++) {
-      if(dayOfMonth % 30 === 1) { // assume 30 days in a month for now
-        monthNum++;
-        dayOfMonth = 1;
-      }
-      let newDate = dayOfMonth.toString() + "/" + monthNum.toString();
-      daysArr.push(newDate);
-      dayOfMonth++;
-    }
-    return daysArr;
-  }
+		for(let i = 0; i < forecastNumDays; i++) {
+			let dayOfMonth = dateToday.getDate();
+			let monthNum = dateToday.getMonth();
+
+			let newDate = dayOfMonth.toString() + "/" + (monthNum + 1).toString();
+			daysArr.push(newDate);
+
+			dateToday.setDate(dayOfMonth + 1); // automatically changes dayOfMonth to 1 and month to next month when end of month reached
+		}
+		return daysArr;
+	}
 
   getCases = (currCases, avgDailyGrowthRate, numDays) => {
     let casesArr = []; // cases per day

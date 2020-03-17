@@ -4,13 +4,6 @@ import Chart from './Chart';
 import InputContainer from './Input';
 import React from 'react';
 
-// TODO:
-// change color for each graph?
-// make app more mobile-friendly
-// add social distancing as an input
-// improve UI
-// refactor / simplify code
-
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -33,48 +26,43 @@ class App extends React.Component {
   handleInputChange = (event) => {
     let name = event.target.name;
     let value = event.target.value;
-    console.log(name, value);
-    let v = 0;
-    if(value !== "") {
-      v = parseInt(value);
-    }
-    else {
-      v = 0;
-    }
-    console.log("v", v, typeof v);
-    //console.log("change detected!");
 
-    let stateCopy = Object.assign({}, this.state);
-    stateCopy.inputBoxes = stateCopy.inputBoxes.slice();
-    let key = name.slice(-1); // number at end of object key, key for inputBoxes array
-    //console.log("key", key);
+    // if input is empty
+    if(isNaN(value)) {
+      value = 0;
+    }
 
+    let newinputBoxes = this.state.inputBoxes.slice();
+    let key = name.slice(-1); // eg. currentCases0 -> 0
+
+    // if input is from forecastNumDays, change value of first element and they
+    // will all change because forecastNumDays is the same for all elements
     if(isNaN(key)) {
-      // for forecast days change
       key = 0;
     }
 
-    stateCopy.inputBoxes[key] = Object.assign({}, stateCopy.inputBoxes[key]);
-    stateCopy.inputBoxes[key][name] = v;
-    console.log("test", stateCopy.inputBoxes[key][name]);
-    this.setState(stateCopy);
+    value = parseInt(value);
+    newinputBoxes[key][name] = value;
+    this.setState({ inputBoxes: newinputBoxes });
     console.log("state", this.state);
+    console.log("value", value, typeof value);
   }
 
-  handleAddBoxButton = (event) => {
-    let currArrLen = this.state.inputBoxes.length.toString();
-    let firstKey = "currentCases" + currArrLen;
-    let secondKey = "avgDailyGrowthRate" + currArrLen;
+  handleAddBoxButtonPress = (event) => {
+    let inputBoxArrLen = this.state.inputBoxes.length.toString();
+
+    let firstKey = "currentCases" + inputBoxArrLen;
+    let secondKey = "avgDailyGrowthRate" + inputBoxArrLen;
     let thirdKey = "forecastNumDays";
 
-    let defaultBox = {
-      [firstKey]: 100 + (currArrLen * 10),
+    let newBox = {
+      [firstKey]: 100 + (parseInt(inputBoxArrLen) * 100), // slightly increase value for each new input box to make graph look nicer
       [secondKey]: 20,
       [thirdKey]: 15
     };
 
     this.setState(state => ({
-      inputBoxes: state.inputBoxes.concat(defaultBox)
+      inputBoxes: state.inputBoxes.concat(newBox)
     }));
     console.log("state", this.state);
   }
@@ -82,19 +70,19 @@ class App extends React.Component {
   handleSubtractBoxButton = (event) => {
     if(this.state.inputBoxes.length > 1) {
       this.setState(state => ({
-        inputBoxes: state.inputBoxes.slice(0, this.state.inputBoxes.length - 1)
+        inputBoxes: state.inputBoxes.slice(0, this.state.inputBoxes.length - 1)   // remove last box
       }));
     }
   }
-
+  
   render() {
     return (
       <div>
       <InputContainer
-        handleChange={ this.handleInputChange }
+        handleInputChange={ this.handleInputChange }
         inputBoxes={ this.state.inputBoxes }
-        handlePositiveButtonPress={ this.handleAddBoxButton }
-        handleNegativeButtonPress={ this.handleSubtractBoxButton }
+        handleAddBoxButtonPress={ this.handleAddBoxButtonPress }
+        handleSubtractBoxButtonPress={ this.handleSubtractBoxButtonPress }
       />
       <Chart inputBoxes={ this.state.inputBoxes } />
     </div>

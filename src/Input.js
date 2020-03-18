@@ -2,7 +2,7 @@ import React from 'react';
 
 function InputBox(props) {
     return (
-      <div className="input-div">
+      <div className="input-div" style={{ backgroundColor: props.backgroundColor }}>
         <p className="input-p">Current Cases</p>
         <input className="main-input" type="number" name={ props.currentCasesKey } onChange={ props.handleInputChange } value={ props.currentCasesValue } />
         <p className="input-p">Average Daily Growth Rate (%)</p>
@@ -15,6 +15,7 @@ function InputBox(props) {
 
 function InputContainer(props) {
   let inputBoxes = props.inputBoxes; // array of objects
+  const colors = ["#e54304", "#f47100", "#93c400", "#179b6a", "#3f8487", "#1586f3", "#a885ff", "#e985ff", "#fd008a", "#808080", "#8c944b", "#53a367"];
 
   // convert array of objects in inputBoxes to array of InputBox components
   let inputBoxComponents = [];
@@ -23,11 +24,10 @@ function InputContainer(props) {
     let avgDailyGrowthRateKey = "avgDailyGrowthRate" + i.toString();
     let forecastNumDaysKey = "forecastNumDays";
 
-    console.log("i", i);
-
     // create an InputBox element from an object
     let inputBox = <InputBox
                     id={ i }
+                    backgroundColor={ colors[i] }
                     handleInputChange={ props.handleInputChange }
 
                     currentCasesKey={ currentCasesKey }

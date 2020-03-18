@@ -12,16 +12,12 @@ class App extends React.Component {
         {
           currentCases0: 100,
           avgDailyGrowthRate0: 20,
-          forecastNumDays: 15,
+          forecastNumDays: 30,
         },
         {
           currentCases1: 200,
           avgDailyGrowthRate1: 20,
         },
-        {
-          currentCases2: 200,
-          avgDailyGrowthRate2: 20,
-        }
       ]
     };
   }
@@ -45,7 +41,6 @@ class App extends React.Component {
     value = parseInt(value);
     newinputBoxes[key][name] = value;
     this.setState({ inputBoxes: newinputBoxes });
-    console.log("state", this.state);
   }
 
   handleAddBoxButtonPress = (event) => {
@@ -60,10 +55,11 @@ class App extends React.Component {
       [thirdKey]: 15
     };
 
-    this.setState(state => ({
-      inputBoxes: state.inputBoxes.concat(newBox)
-    }));
-    console.log("state", this.state);
+    if(this.state.inputBoxes.length < 12) {
+      this.setState(state => ({
+        inputBoxes: state.inputBoxes.concat(newBox)
+      }));
+    }
   }
 
   handleSubtractBoxButtonPress = (event) => {

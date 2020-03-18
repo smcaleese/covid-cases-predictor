@@ -1,5 +1,12 @@
 p, input {
-  font-family: Helvetica, Arial;
+  color: white;
+  font-family: 'Baloo Chettan 2', Helvetica, Arial;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+input {
+  color: black;
 }
 
 .input-ul {
@@ -14,11 +21,10 @@ p, input {
   display: flex;
   flex-direction: column;
   width: 20rem;
-  background-color: white;
   box-shadow: 0px 0.25rem 0.625rem 0.25rem #eee;
-  border-radius: 2px;
+  border-radius: 1rem;
   margin: 3rem;
-  padding: 10px 0 30px 0;
+  padding: 0 0 2rem 0;
 }
 
 .input-box-button {
@@ -38,6 +44,25 @@ p, input {
   padding: 5px;
 }
 
+.custom-tooltip {
+  text-align: center;
+  width: 6rem;
+  border: 0.1rem solid #eee;
+  background-color: white;
+}
+
+.tooltip-ul {
+  padding: 0;
+}
+
+.tooltip-ul li {
+  font-size: 1.2rem;
+}
+
+.tooltip-label {
+  color: black;
+}
+
 li {
   list-style-type: none;
 }
@@ -51,7 +76,12 @@ li {
 
 @media only screen and (max-width: 40em) {
   .input-div {
-    width: 40rem;
-    height: 30rem;
+    width: 25rem;
+    margin: 3rem;
+  }
+  .input-box-button {
+    border: none;
+    padding: 1.5rem 3rem;
+    font-size: 6rem;
   }
 }

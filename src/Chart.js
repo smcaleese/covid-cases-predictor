@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
-import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
-} from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import CustomTooltip from './CustomTooltip';
 
 class Chart extends PureComponent {
 	getDates(forecastNumDays) {
@@ -20,117 +19,97 @@ class Chart extends PureComponent {
 		return daysArr;
 	}
 
-  getCases = (currCases, avgDailyGrowthRate, numDays) => {
+  getCases = (currentCases, avgDailyGrowthRate, forecastNumDays) => {
     let casesArr = []; // cases per day
 
-    for(let i = 0; i < numDays; i++) {
-      let cases = currCases * Math.pow((1 + (avgDailyGrowthRate / 100)), i) // cases for a given day
+    for(let i = 0; i < forecastNumDays; i++) {
+      let cases = currentCases * Math.pow((1 + (avgDailyGrowthRate / 100)), i) // cases for a given day
       cases = Math.round(cases);
       casesArr.push(cases);
     }
-    console.log(casesArr);
     return casesArr;
   }
 
-    render() {
-      let inputBoxes = this.props.inputBoxes; // array of objects
-
-      let numDays = inputBoxes[0]["forecastNumDays"];
-      const dateArr = this.getDates(numDays);
-      console.log("numDays:", numDays);
-
-      var newElement = { name: [] };
-
-      // create template by adding columns: newElement
-      for(let i = 1; i <= inputBoxes.length; i++) {
-        newElement["cases" + i.toString()] = [];
-      }
-
-      // now newElement looks something like: newElement = { name: [], cases1: [], cases2: [] }
-
-      // call getCases() for every element in inputBoxes and return an array of case data based on those inputs
-      let casesArrOfArrays = [];
-      casesArrOfArrays.push(dateArr);
-      console.log("dateArr", dateArr);
-
-      let numCaseColumns = inputBoxes.length;
-      for(let i = 0; i < numCaseColumns; i++) {
-        // create new unique cases array based on each input box
-        let currCasesKey = Object.keys(inputBoxes[i])[0];
-        let avgDailyGrowthRateKey = Object.keys(inputBoxes[i])[1];
-        console.log("value2:", numDays);
-        let casesArr = this.getCases(inputBoxes[i][currCasesKey], inputBoxes[i][avgDailyGrowthRateKey], numDays);
-        casesArrOfArrays.push(casesArr);
-      }
-
-      console.log("x:", casesArrOfArrays);
-
-      // array of arrays
-      // [dateArr, cases1, cases2, ...]
-
-      // populate empty columns with data
-      let data = [];
-
-      // let newElement = { name: casesArrOfArrays[0][i], cases1: casesArrOfArrays[1][i], cases2: casesArrOfArrays[2][i], ...}
-
-      const keys = Object.keys(newElement);
-      // create and push a new element for each date
-      // i loops 'down' while keyArrIndex loops 'accross'
-      for(let i = 0; i < casesArrOfArrays[0].length; i++) {
-        let newElementCopy = {...newElement}; // create shallow copy of object otherwise all elements in data will be the same
-        let keyArrIndex = 0;
-        for(const key of keys) {
-          newElementCopy[key] = casesArrOfArrays[keyArrIndex][i];
-          keyArrIndex++;
-        }
-        data.push(newElementCopy);
-      }
-
-      // example data:
-      // { name: 2/3, cases1: 100, cases2: 50 }
-      // { name: 3/3, cases1: 200, cases2: 100 }
-
-      let xAxisTicks = dateArr.length;
-      let graphWidth = (xAxisTicks / 30) * 1800;
-
-      // get keys for dataKey
-      let keyArr = [];
-      for(const key of keys) {
-        keyArr.push(key);
-      }
-      keyArr = keyArr.splice(1) // remove dates key
-      console.log("data:", keyArr);
-
-      // red, orange, green, blue
-      const colors = ["#e03e00", "#ea7100", "#00b200", "#0482cb"];
-
-      let lineArr = [];
-      // add lines to lineArr
-      for(let i = 0; i < keyArr.length; i++) {
-        const line = <Line connectNulls type="monotone" dataKey={ keyArr[i] } stroke={ colors[i % colors.length] } fill={ colors[i % colors.length ] } animationDuration={100} />;
-        lineArr.push(line);
-      }
-      console.log("lines:", lineArr);
-
-      return (
-        <div>
-          <LineChart
-            width={graphWidth}
-            height={500}
-            data={data}
-            margin={{
-              top: 20, right: 10, left: 10, bottom: 0,
-            }}
-          >
-            <CartesianGrid strokeDasharray="5 5" />
-            <XAxis dataKey="name" tickCount={100} />
-            <YAxis />
-            <Tooltip animationDuration={50} wrapperStyle={{ font: '16px Arial' }} />
-            { lineArr }
-          </LineChart>
-      </div>
-      );
-    }
+  // adds commas to numbers in y-axis
+  formatYAxis(tickItem) {
+	return tickItem.toLocaleString();
   }
 
-  export default Chart;
+  render() {
+    let inputBoxes = this.props.inputBoxes; // array of objects
+
+    	let forecastNumDays = inputBoxes[0]["forecastNumDays"];
+		const dateArr = this.getDates(forecastNumDays);
+
+		let newElement = {};
+		newElement["dates"] = [];
+
+		let arrOfArrays = [];
+		arrOfArrays.push(dateArr);
+
+		// loop through inputBoxes, get cases arrays and create newElement template
+		let cases = "cases";
+		for(let i = 0; i < inputBoxes.length; i++) {
+			let currentCasesKey = "currentCases" + i.toString();
+    	let avgDailyGrowthRateKey = "avgDailyGrowthRate" + i.toString();
+
+			let nextCasesArr = this.getCases(inputBoxes[i][currentCasesKey], inputBoxes[i][avgDailyGrowthRateKey], forecastNumDays);
+			arrOfArrays.push(nextCasesArr);
+			newElement[cases + (i + 1).toString() ] = []; 	// add cases key
+		}
+
+		// template: newElement = {dates: [], cases1: [], cases2: [], ...};
+		// arrOfArrays = [ [dateArr], [cases1], [cases2], [cases3] ];
+
+		let data = [];
+		const keys = Object.keys(newElement);
+
+		// i loops 'down' and adds new newElements to data for every date while keyArrIndex loops 'across' and fills a newElement using arrOfArrays
+		for(let i = 0; i < dateArr.length; i++) {
+			let newElementCopy = {...newElement}; // create shallow copy
+			let keyArrIndex = 0;
+			for(const key of keys) {
+				newElementCopy[key] = arrOfArrays[keyArrIndex][i];
+				keyArrIndex++;
+			}
+			data.push(newElementCopy);
+		}
+
+    	// example data:
+    	// [{ dates: 2/3, cases1: 100, cases2: 50 },
+    	// { dates: 3/3, cases1: 200, cases2: 100 }]
+
+	    // red -> orange -> blue -> green -> violet
+		const colors = ["#e54304", "#f47100", "#93c400", "#179b6a", "#3f8487", "#1586f3", "#a885ff", "#e985ff", "#fd008a", "#808080", "#8c944b", "#53a367"];
+
+		// create a line for every cases key (index 1 to n)
+		let lineArr = [];
+    	for(let i = 1; i < keys.length; i++) {
+      		const line = <Line connectNulls key={ i } type="monotone" strokeWidth="2"
+				dataKey={ keys[i] } stroke={ colors[i - 1] } fill={ colors[(i - 1)] } animationDuration={ 100 } />;
+      		lineArr.push(line);
+		}
+
+		let xAxisTicks = dateArr.length;
+		let graphWidth = (xAxisTicks / 30) * 1800;
+
+    	return (
+      		<div>
+        	<LineChart
+          		width={ graphWidth }
+          		height={ 500 }
+          		data={ data }
+         	 	margin={{ top: 20, right: 10, left: 10, bottom: 0 }}
+       	 	>
+          	<CartesianGrid strokeDasharray="5 5" />
+          	<XAxis dataKey="dates" tick={{ fontFamily: 'Helvetica' }} tickCount={ 100 } />
+          	<YAxis tick={{ fontFamily: 'Helvetica' }} tickFormatter={ this.formatYAxis } />
+          	<Tooltip content={ <CustomTooltip /> } animationDuration={ 50 } wrapperStyle={{ font: '1rem Helvetica, Arial' }} />
+          	{ lineArr }
+        	</LineChart>
+    		</div>
+    	);
+  	}
+}
+
+export default Chart;

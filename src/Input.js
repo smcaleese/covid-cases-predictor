@@ -3,12 +3,18 @@ import React from 'react';
 function InputBox(props) {
     return (
       <div className="input-div" style={{ backgroundColor: props.backgroundColor }}>
-        <p className="input-p">Current Cases</p>
-        <input className="main-input" type="number" name={ props.currentCasesKey } onChange={ props.handleInputChange } value={ props.currentCasesValue } />
-        <p className="input-p">Average Daily Growth Rate (%)</p>
-        <input className="main-input" type="number" name={ props.avgDailyGrowthRateKey } onChange={ props.handleInputChange } value={ props.avgDailyGrowthRateValue } />
-        <p className="input-p">Forecase Days</p>
-        <input className="main-input" type="number" name={ props.forecastNumDaysKey } onChange={ props.handleInputChange } value={ props.forecastNumDaysValue } />
+        <div className="input-section">
+          <p className="input-p">Current Cases</p>
+          <input className="input-box" type="number" name={ props.currentCasesKey } onChange={ props.handleInputChange } value={ props.currentCasesValue } />
+        </div>
+        <div className="input-section">
+          <p className="input-p">Average Daily Growth Rate (%)</p>
+          <input className="input-box" type="number" name={ props.avgDailyGrowthRateKey } onChange={ props.handleInputChange } value={ props.avgDailyGrowthRateValue } />
+        </div>
+        <div className="input-section">
+          <p className="input-p">Forecase Days</p>
+          <input className="input-box" type="number" name={ props.forecastNumDaysKey } onChange={ props.handleInputChange } value={ props.forecastNumDaysValue } />
+        </div>
       </div>
     );
 }
@@ -49,9 +55,13 @@ function InputContainer(props) {
   return (
     <div>
       <ul className="input-ul">
-        { inputBoxListItems }
-        <button onClick={ props.handleAddBoxButtonPress } className="input-box-button"> &#43; </button>
-        <button onClick={ props.handleSubtractBoxButtonPress } className="input-box-button"> &minus; </button>
+        <li>{ inputBoxListItems }</li>
+        <li className="input-box-button-li">
+          <span className="input-box-buttons">
+            <button onClick={ props.handleAddBoxButtonPress } className="input-box-button"> &#43; </button>
+            <button onClick={ props.handleSubtractBoxButtonPress } className="input-box-button"> &minus; </button>
+          </span>
+        </li>
       </ul>
     </div>
   );
